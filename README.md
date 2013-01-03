@@ -26,7 +26,6 @@
   1. [Accessors](#accessors)
   1. [jQuery](#jquery)
   1. [ES5 Compatibility](#es5)
-  1. [Testing](#testing)
   1. [Performance](#performance)
   1. [Resources](#resources)
   1. [About](#about)
@@ -1265,21 +1264,9 @@
 ## <a name='es5'>ECMAScript 5 Compatibility</a>
 
   - Refer to [Kangax](https://twitter.com/kangax/)'s ES5 [compatibility table](http://kangax.github.com/es5-compat-table/)
+  - Or simply use [kriskowal/es5-shim](https://github.com/kriskowal/es5-shim)
 
   **[[⬆]](#TOC)**
-
-
-## <a name='testing'>Testing</a>
-
-  - **Yup.**
-
-    ```javascript
-    function() {
-        return true;
-    }
-    ```
-
-    **[[⬆]](#TOC)**
 
 
 ## <a name='performance'>Performance</a>
@@ -1289,6 +1276,7 @@
   - [Bang Function](http://jsperf.com/bang-function)
   - [jQuery Find vs Context, Selector](http://jsperf.com/jquery-find-vs-context-sel/13)
   - [innerHTML vs textContent for script text](http://jsperf.com/innerhtml-vs-textcontent-for-script-text)
+  - [Google I/O 2012 - Breaking the JavaScript Speed Limit with V8](http://www.youtube.com/watch?v=UJPdhx5zTaw)
   - Loading...
 
   **[[⬆]](#TOC)**
@@ -1303,6 +1291,7 @@
 
 **Other Styleguides**
 
+  - [Airbnb JavaScript Style Guide](//github.com/airbnb/javascript)
   - [Google JavaScript Style Guide](http://google-styleguide.googlecode.com/svn/trunk/javascriptguide.xml)
   - [jQuery Core Style Guidelines](http://docs.jquery.com/JQuery_Core_Style_Guidelines)
   - [Principles of Writing Consistent, Idiomatic JavaScript](https://github.com/rwldrn/idiomatic.js/)
@@ -1340,7 +1329,7 @@
 
 ## <a name='about'>About</a>
 
-  This is a fork of the AirBnB Javascript Stype Guide made to suite my style preferences [airbnb/javascript](//github.com/airbnb/javascript).
+  This is a fork of the Airbnb JavaScript Style Guide made to suite my style preferences [airbnb/javascript](//github.com/airbnb/javascript).
 
 ## <a name='license'>License</a>
 
