@@ -1,4 +1,4 @@
-# Airbnb JavaScript Style Guide() {
+# JavaScript Style Guide
 
 *A mostly reasonable approach to JavaScript*
 
@@ -21,9 +21,9 @@
   1. [Semicolons](#semicolons)
   1. [Type Casting & Coercion](#type-coercion)
   1. [Naming Conventions](#naming-conventions)
-  1. [Accessors](#accessors)
-  1. [Constructors](#constructors)
   1. [Modules](#modules)
+  1. [Constructors and Classes](#constructors)
+  1. [Accessors](#accessors)
   1. [jQuery](#jquery)
   1. [ES5 Compatibility](#es5)
   1. [Testing](#testing)
@@ -1016,9 +1016,148 @@
     **[[⬆]](#TOC)**
 
 
+## <a name='modules'>Modules</a>
+
+  - All modules should follow the AMD pattern.
+  - Each module should export a constructor function or an instance of an object for 'singleton' modules.
+  - Every module should be in its own file with no other modules inside. The 'main' module is an exception.
+  - The file should be named with underscore separated lowercased letters that match the name of the constructor function.
+  - Always declare `'use strict';` at the top module function.
+
+    ```javascript
+    // view_models/user_vm.js
+
+    define([
+        //libs
+        'jquery'
+    ], function ($, ko, Class) {
+        'use strict';
+
+        var MyModuleConstructor = function () {};
+        return MyModuleConstructor;
+    });
+    ```
+
+    **[[⬆]](#TOC)**
+
+
+## <a name='constructors'>Constructors and Classes</a>
+
+  - As javascript does not provide a class system we create a convention based class system taken from [BackboneJS 'Class.extend'](http://backbonejs.org).
+  - Always use 'Class.extend' to create constructor functions for classes.
+
+    ```javascript
+    // bad
+    function Jedi() {
+        console.log('new jedi');
+    }
+
+    Jedi.prototype.fight = function fight() {
+        console.log('fighting');
+    };
+
+    Jedi.prototype.block = function block() {
+        console.log('blocking');
+    };
+    
+    // good
+    var Jedi = Class.extend({
+        constructor: function () {
+            console.log('new jedi');
+        },
+        fight: function fight() {
+            console.log('fighting');
+        },
+        block: function block() {
+            console.log('blocking');
+        }
+    });
+    ```
+
+    - Always use a saved reference to 'this' named 'self' when accessing it inside 'Class' methods.
+
+    ```javascript
+    // bad
+    var Jedi = Class.extend({
+        constructor: function () {
+            this._height = height;
+        }
+    });
+
+    // good
+    var Jedi = Class.extend({
+        constructor: function () {
+            var self = this;
+
+            self._height = height;
+        }
+    });
+    ```
+
+  - Always initialize all public/private properties in the constructor for easier maintainance and performace reasons [Initialize all object members in constructor functions](https://www.youtube.com/watch?feature=player_detailpage&v=UJPdhx5zTaw#t=900s).
+
+    ```javascript
+    // bad
+    var Jedi = Class.extend({
+        constructor: function () {
+        },
+        height: function(height) {
+            var self = this;
+
+            self._height = height;
+        }
+    });
+
+    // good
+    var Jedi = Class.extend({
+        constructor: function () {
+            var self = this;
+
+            self._height = undefined;
+        },
+        height: function(height) {
+            var self = this;
+
+            self._height = height;
+        }
+    });
+    ```
+
+    **[[⬆]](#TOC)**
+
+
 ## <a name='accessors'>Accessors</a>
 
-  - Accessor functions for properties are not required
+  - Accessor functions for private properties are not required.
+  - Always create accessor functions for public properties.
+  - If you do make accessor functions use a single function - val() and val('newval') instead of getVal() and setVal('hello').
+
+    ```javascript
+    // bad
+    dragon.getAge();
+
+    // good
+    dragon.age();
+
+    // bad
+    dragon.setAge(25);
+
+    // good
+    dragon.age(25);
+    ```
+
+  - Use 'ko.observable()' and 'ko.observableArray()' to create accessor functions for properties. Its easier that way.
+    
+    ```javascript
+    var Dragon = Class.extend({
+        constructor: function () {
+            var self = this;
+
+            self.age = ko.observable();
+        }
+    });
+    ```
+    
   - If the property is a boolean, use isVal() or hasVal()
 
     ```javascript
@@ -1036,134 +1175,23 @@
   - It's okay to create get() and set() functions, but be consistent.
 
     ```javascript
-    function Jedi(options) {
-        options || (options = {});
-        var lightsaber = options.lightsaber || 'blue';
-        this.set('lightsaber', lightsaber);
-    }
+    var Jedi = Class.extend({
+        constructor: function (options) {
+            var self = this,
+                lightsaber;
+            
+            options || (options = {});
+            lightsaber = options.lightsaber || 'blue';
 
-    Jedi.prototype.set = function(key, val) {
-        this[key] = val;
-    };
-
-    Jedi.prototype.get = function(key) {
-        return this[key];
-    };
-    ```
-
-    **[[⬆]](#TOC)**
-
-
-## <a name='constructors'>Constructors</a>
-
-  - Assign methods to the prototype object, instead of overwriting the prototype with a new object. Overwriting the prototype makes inheritance impossible: by resetting the prototype you'll overwrite the base!
-
-    ```javascript
-    function Jedi() {
-        console.log('new jedi');
-    }
-
-    // bad
-    Jedi.prototype = {
-        fight: function fight() {
-            console.log('fighting');
+            self.set('lightsaber', lightsaber);
         },
-
-        block: function block() {
-            console.log('blocking');
+        set: function(key, val) {
+            this[key] = val;
+        },
+        get: function(key) {
+            return this[key];
         }
-    };
-
-    // good
-    Jedi.prototype.fight = function fight() {
-        console.log('fighting');
-    };
-
-    Jedi.prototype.block = function block() {
-        console.log('blocking');
-    };
-    ```
-
-  - Methods can return `this` to help with method chaining.
-
-    ```javascript
-    // bad
-    Jedi.prototype.jump = function() {
-        this.jumping = true;
-        return true;
-    };
-
-    Jedi.prototype.setHeight = function(height) {
-        this.height = height;
-    };
-
-    var luke = new Jedi();
-    luke.jump(); // => true
-    luke.setHeight(20) // => undefined
-
-    // good
-    Jedi.prototype.jump = function() {
-        this.jumping = true;
-        return this;
-    };
-
-    Jedi.prototype.setHeight = function(height) {
-        this.height = height;
-        return this;
-    };
-
-    var luke = new Jedi();
-
-    luke.jump()
-        .setHeight(20);
-    ```
-
-
-  - It's okay to write a custom toString() method, just make sure it works successfully and causes no side effects.
-
-    ```javascript
-    function Jedi(options) {
-        options || (options = {});
-        this.name = options.name || 'no name';
-    }
-
-    Jedi.prototype.getName = function getName() {
-        return this.name;
-    };
-
-    Jedi.prototype.toString = function toString() {
-        return 'Jedi - ' + this.getName();
-    };
-    ```
-
-    **[[⬆]](#TOC)**
-
-
-## <a name='modules'>Modules</a>
-
-  - The module should start with a `!`. This ensures that if a malformed module forgets to include a final semicolon there aren't errors in production when the scripts get concatenated.
-  - The file should be named with camelCase, live in a folder with the same name, and match the name of the single export.
-  - Add a method called noConflict() that sets the exported module to the previous version.
-  - Always declare `'use strict';` at the top of the module.
-
-    ```javascript
-    // fancyInput/fancyInput.js
-
-    !function(global) {
-        'use strict';
-
-        var previousFancyInput = global.FancyInput;
-
-        function FancyInput(options) {
-            this.options = options || {};
-        }
-
-        FancyInput.noConflict = function noConflict() {
-            global.FancyInput = previousFancyInput;
-        };
-
-        global.FancyInput = FancyInput;
-    }(this);
+    });
     ```
 
     **[[⬆]](#TOC)**
@@ -1191,7 +1219,7 @@
         // ...stuff...
 
         $('.sidebar').css({
-          'background-color': 'pink'
+            'background-color': 'pink'
         });
     }
 
@@ -1203,7 +1231,7 @@
         // ...stuff...
 
         $sidebar.css({
-          'background-color': 'pink'
+            'background-color': 'pink'
         });
     }
     ```
@@ -1312,7 +1340,7 @@
 
 ## <a name='about'>About</a>
 
-  This is a fork of the AirBnB Javascript Stype Guide [airbnb/javascript](//github.com/airbnb/javascript).
+  This is a fork of the AirBnB Javascript Stype Guide made to suite my style preferences [airbnb/javascript](//github.com/airbnb/javascript).
 
 ## <a name='license'>License</a>
 
