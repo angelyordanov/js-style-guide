@@ -826,12 +826,6 @@
         var name = 'Skywalker';
         return name;
     })();
-
-    // good
-    ;(function() {
-        var name = 'Skywalker';
-        return name;
-    })();
     ```
 
     **[[⬆]](#TOC)**
@@ -1329,7 +1323,7 @@
 
 ## <a name='about'>About</a>
 
-  This is a fork of the Airbnb JavaScript Style Guide made to suite my style preferences [airbnb/javascript](//github.com/airbnb/javascript).
+  This is a fork of the Airbnb JavaScript Style Guide([airbnb/javascript](//github.com/airbnb/javascript)) made to suite my style preferences.
 
 ## <a name='license'>License</a>
 
