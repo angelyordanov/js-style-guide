@@ -23,7 +23,7 @@
   1. [Naming Conventions](#naming-conventions)
   1. [Accessors](#accessors)
   1. [Constructors](#constructors)
-  1. [Modules](#modules)
+  1. [Files](#files)
   1. [jQuery](#jquery)
   1. [ES5 Compatibility](#es5)
   1. [Testing](#testing)
@@ -1166,31 +1166,23 @@
     **[[⬆]](#TOC)**
 
 
-## <a name='modules'>Modules</a>
+## <a name='files'>Files</a>
 
-  - The module should start with a `!`. This ensures that if a malformed module forgets to include a final semicolon there aren't errors in production when the scripts get concatenated.
-  - The file should be named with camelCase, live in a folder with the same name, and match the name of the single export.
-  - Add a method called noConflict() that sets the exported module to the previous version.
-  - Always declare `'use strict';` at the top of the module.
+  - File contents should be wrapped in a function exposing all dependent globals as its arguments.
+  - The file should be named with camelCase and match the name of the exported `constructor` function if it contains just one.
+  - Try to place each module, class, constructor function, etc. in its own file.
+  - Always declare `'use strict';` at the top of the wrapper function.
+  - Place a `//global myGlobal, mySecondGlobal` comment as the first line to make JsHint happy.
 
     ```javascript
-    // fancyInput/fancyInput.js
-
-    !function(global) {
+    //global angular
+    function(angular) {
       'use strict';
 
-      var previousFancyInput = global.FancyInput;
-
-      function FancyInput(options) {
-        this.options = options || {};
-      }
-
-      FancyInput.noConflict = function noConflict() {
-        global.FancyInput = previousFancyInput;
-      };
-
-      global.FancyInput = FancyInput;
-    }(this);
+      angular.module('app').controller('GreetingCtrl', ['$scope', function($scope) {
+        $scope.greeting = 'Hola!';
+      }]);
+    }(angular);
     ```
 
     **[[⬆]](#TOC)**
